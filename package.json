@@ -1,7 +1,8 @@
+
 {
   "name": "bloop",
   "version": "1.0.0-beta.0",
-  "description": "Bloop Messenger - 1.0.0 Beta",
+  "description": "Bloop Messenger - Fast Local Network Messenger",
   "main": "main.js",
   "author": "Bloop Developer",
   "license": "ISC",
@@ -16,18 +17,30 @@
     "directories": {
       "output": "dist"
     },
-    "win": {
-      "target": "nsis",
-      "artifactName": "Bloop-Setup-${version}.${ext}"
-    },
     "files": [
       "**/*",
       "!dist/**/*",
-      "!build/**/*"
+      "!build/**/*",
+      "!release/**/*",
+      "!node_modules/.cache/**/*",
+      "!.git/**/*",
+      "!.env",
+      "!.env.*"
     ],
     "asarUnpack": [
       "node_modules/ws/**/*"
     ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "artifactName": "Bloop-Setup-${version}.${ext}"
+    },
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
@@ -38,8 +51,8 @@
     "publish": [
       {
         "provider": "github",
-        "owner": "YOUR_GITHUB_USERNAME",
-        "repo": "Bloop",
+        "owner": "nazay300-lgtm",
+        "repo": "Bloop.nazay",
         "releaseType": "prerelease"
       }
     ]
@@ -53,4 +66,3 @@
     "electron-builder": "^24.13.3"
   }
 }
-
