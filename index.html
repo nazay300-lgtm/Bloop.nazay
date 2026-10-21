@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bloop 1.0.0 Beta</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="intro.css">
+  <link rel="stylesheet" href="design-refresh.css">
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+</head>
+<body>
+
+  <div id="toast-container"></div>
+
+  <!-- АНИМАЦИЯ ЗАСТАВКИ -->
+  <div id="splash-screen">
+    <div id="splash-black"></div>
+    <div class="splash-content" id="splash-content">
+      <img src="logo.png" alt="Bloop" class="splash-logo" onerror="this.style.display='none'">
+      <h1 class="splash-text">BLOOP</h1>
+    </div>
+  </div>
+
+  <!-- ЕДИНАЯ СЦЕНА (Айсберг + Интерфейс) -->
+  <div id="main-scene">
+    
+    <!-- ФОН -->
+    <div class="ocean-bg" id="ocean-bg">
+      <div class="mountain-bg" id="mountain-bg"></div>
+    </div>
+
+    <!-- ИНТЕРФЕЙС -->
+    <div class="app-wrapper" id="app-wrapper">
+      
+      <section class="stage stage-welcome" id="stage-1">
+        <div class="ice-top-content">
+          <img src="logo.png" alt="Bloop" class="welcome-logo" style="mix-blend-mode: screen;" onerror="this.style.display='none'">
+          <h1 class="welcome-title">ДОБРО ПОЖАЛОВАТЬ</h1>
+          <button class="brutal-btn" id="btn-to-profile">БЫТЬ НА СВЯЗИ</button>
+        </div>
+      </section>
+
+      <section class="stage stage-profile" id="stage-2">
+        <div class="profile-panel">
+          <p class="system-text">[ SYSTEM: INITIALIZATION ]</p>
+          <h2 class="profile-title">ДАВАЙТЕ<br>ПОЗНАКОМИМСЯ</h2>
+          <div class="avatar-upload-container">
+            <div class="avatar-preview" id="reg-avatar-preview"></div>
+            <span class="upload-text" id="reg-upload-text">[ ЗАГРУЗИТЬ ФОТО ]</span>
+            <input type="file" id="reg-avatar-input" accept="image/*" style="display: none;">
+          </div>
+          <div class="input-group">
+            <label>[ НИКНЕЙМ ]</label>
+            <input type="text" id="input-nickname" placeholder="Введите ваш ник..." autocomplete="off">
+            <span id="nick-error" class="error-text">[ ОШИБКА: ВВЕДИТЕ НИКНЕЙМ ]</span>
+          </div>
+          <div class="input-group">
+            <label>[ ОПИСАНИЕ АККАУНТА ]</label>
+            <textarea id="input-desc" placeholder="Пара слов о себе..." rows="3"></textarea>
+          </div>
+          <button class="brutal-btn" id="btn-save-profile">СОХРАНИТЬ</button>
+        </div>
+      </section>
+
+      <section class="stage stage-main" id="stage-3">
+
+        <div id="submarine-container" style="display: none;">
+          <svg id="submarine" viewBox="0 0 200 100" width="200" height="100">
+            <ellipse cx="100" cy="50" rx="80" ry="30" fill="#fbbf24" stroke="#d97706" stroke-width="4"/>
+            <circle cx="100" cy="50" r="15" fill="#38bdf8" stroke="#d97706" stroke-width="4"/>
+            <circle cx="95" cy="45" r="4" fill="#fff" opacity="0.6"/>
+            <path d="M 60 20 L 60 35 L 50 35 L 50 20 Z" fill="#d97706"/>
+            <rect x="45" y="10" width="10" height="10" fill="#d97706"/>
+            <path d="M 180 40 L 190 30 M 180 60 L 190 70 M 180 50 L 195 50" stroke="#d97706" stroke-width="4" stroke-linecap="round"/>
+            <path d="M 20 50 L 5 40 M 20 50 L 5 60" stroke="#d97706" stroke-width="4" stroke-linecap="round"/>
+          </svg>
+        </div>
+
+        <div class="global-logo">
+          <img src="logo.png" alt="Bloop Logo" style="mix-blend-mode: screen;" onerror="this.style.display='none'">
+        </div>
+
+        <div class="glacier-sidebar">
+          <div class="sidebar-header"><img class="sidebar-brand-icon" src="logo.png" alt="" onerror="this.style.display='none'"><span class="logo-text">BLOOP™</span></div>
+          <div class="contacts-wrapper">
+            <div class="sidebar-tabs">
+              <button class="tab-btn active" id="tab-contacts">КОНТАКТЫ</button>
+              <button class="tab-btn" id="tab-groups">ГРУППЫ</button>
+              <button class="sidebar-add-btn" id="btn-create-group-inline" title="Создать группу" aria-label="Создать группу">+</button>
+            </div>
+            <div class="contact-list" id="contact-list"></div>
+          </div>
+
+          <div class="player-panel">
+            <div class="player-avatar" id="main-player-avatar"></div>
+            <div class="player-info">
+              <span class="player-name" id="main-player-name" title="Открыть профиль">User</span>
+            </div>
+            <div class="player-actions">
+              <button class="icon-btn" id="btn-settings" title="Настройки">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.06-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.73,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.06,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.49-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/></svg>
+              </button>
+
+            </div>
+          </div>
+          <button id="btn-quit-app" class="tiny-quit-btn">[ ВЫХОД ]</button>
+        </div>
+
+        <div class="chat-container">
+          <div class="chat-header-cloud">
+            <div class="header-content">
+              <span id="chat-with-name">Выберите контакт</span>
+              <div style="display:flex; gap:5px;">
+                <button class="icon-btn" id="btn-chat-settings" title="Обои чата" style="display:none;">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="#8ca2b3"><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.06-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.73,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.06,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.49-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/></svg>
+                </button>
+                <button class="icon-btn phone-btn" id="btn-call" title="Позвонить">
+                  <svg viewBox="0 0 24 24" width="22" height="22" fill="#38bdf8"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+                </button>
+                <button class="icon-btn" id="btn-group-call" title="Групповой звонок" style="display:none;">
+                  <svg viewBox="0 0 24 24" width="22" height="22" fill="#4ade80"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="chat-messages" id="chat-messages"></div>
+
+          <div id="typing-indicator" class="typing-indicator hidden">
+            <div class="wave">
+              <span></span><span></span><span></span>
+            </div>
+          </div>
+
+          <div id="edit-message-banner" class="edit-banner hidden">
+            <div class="edit-banner-content">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="#38bdf8"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z"/></svg>
+              <span>Редактирование сообщения</span>
+            </div>
+            <button id="btn-cancel-edit" class="subtle-close" title="Отменить">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+            </button>
+          </div>
+
+          <div class="floating-input-area">
+            <div class="input-pill">
+              <button class="attach-btn" id="btn-attach" title="Прикрепить фото/видео">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6H10v9.5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z"/></svg>
+              </button>
+              <input type="file" id="chat-file-input" accept="image/*,video/*" style="display: none;">
+              <textarea id="chat-input" rows="1" placeholder="Написать сообщение..." autocomplete="off"></textarea>
+              <button class="send-btn" id="btn-send">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- КОНТЕКСТНЫЕ МЕНЮ -->
+  <div id="contact-context-menu" class="context-menu hidden">
+    <button id="ctx-view-profile">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="vertical-align:middle; margin-right:6px;"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+      Профиль
+    </button>
+    <button id="ctx-reconnect">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="vertical-align:middle; margin-right:6px;"><path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+      Подключиться
+    </button>
+    <button id="ctx-remove-friend" class="danger">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="vertical-align:middle; margin-right:6px;"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+      Удалить из друзей
+    </button>
+  </div>
+
+  <div id="message-context-menu" class="context-menu hidden">
+    <button id="ctx-edit-message">
+      <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" style="vertical-align:middle; margin-right:6px;"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z"/></svg>
+      Изменить
+    </button>
+    <button id="ctx-delete-message" class="danger">
+      <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" style="vertical-align:middle; margin-right:6px;"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+      Удалить
+    </button>
+  </div>
+
+  <div id="delete-message-menu" class="context-menu hidden" style="min-width: 180px;">
+    <button id="ctx-del-me" style="color: #e2e8f0;">Удалить у меня</button>
+    <button id="ctx-del-all" class="danger">Удалить у всех</button>
+  </div>
+
+  <!-- ЭКРАН ЗВОНКА -->
+  <div id="call-screen" class="hidden">
+    <div class="call-top-bar">
+      <div class="call-info">
+        <span class="call-title" id="call-title">Звонок</span>
+        <span class="call-timer" id="call-timer">00:00</span>
+      </div>
+      <div class="call-top-actions">
+        <button class="call-link-btn" id="btn-call-messages" title="Чат звонка">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
+        </button>
+        <button class="call-link-btn" id="btn-call-minimize" title="Свернуть">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M19 13H5v-2h14v2z"/></svg>
+        </button>
+        <button class="call-link-btn" onclick="copyCallLink()">Ссылка</button>
+      </div>
+    </div>
+    <div class="call-video-grid" id="call-video-grid"></div>
+    <div class="call-controls">
+      <div class="controls-center">
+        <button class="call-ctrl-btn" id="btn-mute" title="Выключить микрофон">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"/></svg>
+        </button>
+        <button class="call-ctrl-btn" id="btn-unmute" style="display:none;" title="Включить микрофон">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M19 11h-1.7c0 .74-.16 1.43-.43 2.05l1.23 1.23c.56-.98.9-2.09.9-3.28zm-4.02.17c0-.06.02-.11.02-.17V5c0-1.66-1.34-3-3-3S9 3.34 9 5v.18l5.98 5.99zM4.27 3L3 4.27l6.01 6.01V11c0 1.66 1.33 3 2.99 3 .22 0 .44-.03.65-.08l1.66 1.66c-.71.33-1.5.52-2.31.52-2.76 0-5.3-2.1-5.3-5.1H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c.91-.13 1.77-.45 2.54-.9L19.73 21 21 19.73 4.27 3z"/></svg>
+        </button>
+        <button class="call-ctrl-btn" id="btn-share-screen" title="Показать экран">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M21 3H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h5v2h8v-2h5c1.1 0 1.99-.9 1.99-2L23 5c0-1.1-.9-2-2-2zm0 14H3V5h18v12z"/></svg>
+        </button>
+        <button class="call-ctrl-btn sharing-active" id="btn-stop-share" style="display:none;" title="Остановить показ">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="#ef4444"><path d="M21 3H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h5v2h8v-2h5c1.1 0 1.99-.9 1.99-2L23 5c0-1.1-.9-2-2-2zm0 14H3V5h18v12z"/></svg>
+        </button>
+        <button class="call-ctrl-btn" id="btn-call-settings" title="Настройки звонка">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.06-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.73,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.06,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.49-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/></svg>
+        </button>
+        <button class="call-ctrl-btn end-call-btn" id="btn-end-call" title="Завершить">
+          <svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor"><path d="M12 9c-1.6 0-3.15.25-4.6.72v3.1c0 .39-.23.74-.56.9-.98.49-1.87 1.12-2.66 1.85-.18.18-.43.28-.7.28-.28 0-.53-.11-.71-.29L.29 13.08c-.18-.17-.29-.42-.29-.7 0-.28.11-.53.29-.71C3.34 8.78 7.46 7 12 7s8.66 1.78 11.71 4.67c.18.18.29.43.29.71 0 .28-.11.53-.29.7l-2.48 2.48c-.18.18-.43.29-.71.29-.27 0-.52-.1-.7-.28-.79-.73-1.68-1.36-2.66-1.85-.33-.16-.56-.51-.56-.9v-3.1C15.15 9.25 13.6 9 12 9z"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div id="call-settings-panel" class="call-settings-panel hidden">
+      <div class="call-settings-header">
+        <h4>Настройки звонка</h4>
+        <button id="btn-close-call-settings" class="subtle-close" title="Закрыть">×</button>
+      </div>
+      <div class="call-settings-body">
+        <label class="call-settings-label">Общая громкость: <span id="master-vol-label">100%</span></label>
+        <input type="range" id="master-volume" min="0" max="100" step="5" value="100">
+        <hr>
+        <p class="call-settings-label">Заглушить участников:</p>
+        <div id="participant-mute-list"></div>
+      </div>
+    </div>
+
+    <div id="call-chat-panel" class="call-chat-panel hidden">
+      <div class="call-chat-header">
+        <span>Чат звонка</span>
+        <button id="btn-close-call-chat" class="subtle-close" title="Закрыть">×</button>
+      </div>
+      <div class="call-chat-messages" id="call-chat-messages"></div>
+      <div class="call-chat-input-row">
+        <input type="text" id="call-chat-input" placeholder="Сообщение всем в звонке..." autocomplete="off">
+        <button id="btn-send-call-chat">→</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ПЛАШКА СВЁРНУТОГО ЗВОНКА -->
+  <div id="mini-call" class="mini-call hidden">
+    <div class="mini-drag-handle" id="mini-drag-handle" title="Перетащить">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M11 18c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2zm-2-8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0-6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6 4c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
+    </div>
+    <div class="mini-call-info">
+      <span id="mini-call-title">Звонок</span>
+      <span id="mini-call-timer">00:00</span>
+    </div>
+    <div class="mini-call-controls">
+      <button id="mini-btn-mute" title="Микрофон">
+        <svg class="icon-unmuted" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"/></svg>
+        <svg class="icon-muted" viewBox="0 0 24 24" width="18" height="18" fill="currentColor" style="display:none;"><path d="M19 11h-1.7c0 .74-.16 1.43-.43 2.05l1.23 1.23c.56-.98.9-2.09.9-3.28zm-4.02.17c0-.06.02-.11.02-.17V5c0-1.66-1.34-3-3-3S9 3.34 9 5v.18l5.98 5.99zM4.27 3L3 4.27l6.01 6.01V11c0 1.66 1.33 3 2.99 3 .22 0 .44-.03.65-.08l1.66 1.66c-.71.33-1.5.52-2.31.52-2.76 0-5.3-2.1-5.3-5.1H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c.91-.13 1.77-.45 2.54-.9L19.73 21 21 19.73 4.27 3z"/></svg>
+      </button>
+      <button id="mini-btn-expand" title="Развернуть">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+      </button>
+      <button id="mini-btn-end" title="Завершить" class="mini-end-btn">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 9c-1.6 0-3.15.25-4.6.72v3.1c0 .39-.23.74-.56.9-.98.49-1.87 1.12-2.66 1.85-.18.18-.43.28-.7.28-.28 0-.53-.11-.71-.29L.29 13.08c-.18-.17-.29-.42-.29-.7 0-.28.11-.53.29-.71C3.34 8.78 7.46 7 12 7s8.66 1.78 11.71 4.67c.18.18.29.43.29.71 0 .28-.11.53-.29.7l-2.48 2.48c-.18.18-.43.29-.71.29-.27 0-.52-.1-.7-.28-.79-.73-1.68-1.36-2.66-1.85-.33-.16-.56-.51-.56-.9v-3.1C15.15 9.25 13.6 9 12 9z"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- МОДАЛКИ -->
+  <div class="modal-overlay" id="incoming-call-modal" style="z-index: 4000;">
+    <div class="modal-content small" style="text-align:center; height: auto; min-height: 220px;">
+      <h3 style="color:#4ade80; margin-top:10px;">[ ВХОДЯЩИЙ ЗВОНОК ]</h3>
+      <p id="incoming-call-subtitle" style="color:#8ca2b3; font-size:0.8rem; margin-top:8px;">Индивидуальный</p>
+      <p id="incoming-caller-name" style="font-size:1.2rem; margin:15px 0;">Пользователь...</p>
+      <div class="modal-actions">
+        <button class="brutal-btn" id="btn-accept-call" style="border-color:#4ade80; color:#4ade80;">ПРИНЯТЬ</button>
+        <button class="brutal-btn cancel" id="btn-decline-call">ОТКЛОНИТЬ</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="incoming-friend-modal" style="z-index: 4100;">
+    <div class="modal-content small" style="text-align:center; height: auto; min-height: 250px;">
+      <h3 style="color:#4ade80; margin-top:10px;">[ ЗАПРОС В ДРУЗЬЯ ]</h3>
+      <div style="display:flex; align-items:center; gap:12px; margin:20px 0; justify-content:center;">
+        <img id="incoming-friend-avatar" src="" style="width:50px;height:50px;border-radius:50%;object-fit:cover;background:#2b5278;">
+        <span id="incoming-friend-name" style="font-size:1.1rem;">Пользователь</span>
+      </div>
+      <div class="modal-actions">
+        <button class="brutal-btn" id="btn-accept-incoming-friend" style="border-color:#4ade80;color:#4ade80;">ПРИНЯТЬ</button>
+        <button class="brutal-btn cancel" id="btn-decline-incoming-friend">ОТКЛОНИТЬ</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="avatar-crop-modal" style="z-index: 3000;">
+    <div class="modal-content" style="width: 500px; height: auto;">
+      <button class="close-modal-btn" data-close="avatar-crop-modal" style="left: 15px;">×</button>
+      <h3 style="margin-top:10px;">[ РЕДАКТИРОВАНИЕ ИЗОБРАЖЕНИЯ ]</h3>
+      <div class="crop-container" style="width: 100%; height: 300px; background: #000; margin-bottom: 15px;">
+        <img id="crop-image" src="" style="max-width: 100%; display: block;">
+      </div>
+      <div class="modal-actions">
+        <button class="brutal-btn" id="btn-save-crop">СОХРАНИТЬ</button>
+        <button class="brutal-btn cancel" id="btn-cancel-crop">ОТМЕНА</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="settings-modal">
+    <div class="modal-content settings-layout-new">
+      <button class="close-modal-btn" data-close="settings-modal" style="left: 15px;">×</button>
+      
+      <div class="settings-header">
+        <span>Настройки</span>
+      </div>
+      
+      <div class="settings-body">
+        <div class="settings-sidebar">
+          <button class="settings-tab active" data-tab="binds">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" style="margin-right:12px;"><path d="M20 5H4c-1.1 0-1.99.9-1.99 2L2 17c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm-9 3h2v2h-2V8zm0 3h2v2h-2v-2zM8 8h2v2H8V8zm0 3h2v2H8v-2zm-1 2H5v-2h2v2zm0-3H5V8h2v2zm9 7H8v-2h8v2zm0-4h-2v-2h2v2zm0-3h-2V8h2v2zm3 3h-2v-2h2v2zm0-3h-2V8h2v2z"/></svg>
+            Бинды
+          </button>
+          <button class="settings-tab" data-tab="friends">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" style="margin-right:12px;"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+            Друзья
+          </button>
+          <button class="settings-tab" data-tab="updates">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" style="margin-right:12px;"><path d="M17.65 6.35A7.95 7.95 0 0 0 12 4a8 8 0 1 0 7.93 9h-2.02A6 6 0 1 1 12 6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+            Обновления
+          </button>
+          <button class="settings-tab" data-tab="notifications">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" style="margin-right:12px;"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z"/></svg>
+            Уведомления
+            <span id="notif-badge" class="notif-badge hidden">0</span>
+          </button>
+        </div>
+
+        <div class="settings-content">
+          <div id="settings-tab-binds" class="settings-pane active">
+            <div class="bind-row">
+              <span class="bind-label">Микрофон (вкл/выкл)</span>
+              <span class="bind-value" id="bind-mic-display">Не задан</span>
+              <div class="bind-actions">
+                <button class="change-btn" id="btn-bind-mic">Назначить</button>
+                <button class="change-btn clear-bind-btn" id="btn-clear-bind-mic" title="Очистить бинд">✕</button>
+              </div>
+            </div>
+          </div>
+
+          <div id="settings-tab-friends" class="settings-pane">
+            <div class="network-guide">
+              <div class="network-guide-head"><span class="network-pulse"></span><strong>СЕТЬ BLOOP</strong><span id="network-state-label">Проверка сети…</span></div>
+              <p>Bloop автоматически обнаруживает пользователей в той же локальной сети. Выбирайте людей по нику, добавляйте в друзья и звоните напрямую.</p>
+              <div class="network-address-row"><span>Ваш адрес</span><code id="network-local-address">Поиск…</code><button class="network-copy" id="btn-copy-local-address" title="Копировать адрес">Копировать</button></div>
+              <div class="network-steps">
+                <div><b>1</b><span>Запустите Bloop у обоих участников в одной LAN или VPN.</span></div>
+                <div><b>2</b><span>Откройте «Найти друзей», найдите человека по нику и отправьте запрос.</span></div>
+                <div><b>3</b><span>После принятия запроса переписка и звонки доступны из списка контактов.</span></div>
+              </div>
+              <p class="network-note">Для интернета без общей VPN-сети могут потребоваться настройка маршрутизатора и проброс порта 8080. Автоматический обход любого NAT не гарантируется.</p>
+            </div>
+            <div class="settings-section" style="display: flex; gap: 10px;">
+              <button class="brutal-btn" id="btn-find-friends" style="flex: 1; padding: 12px; font-size: 0.85rem;">НАЙТИ ДРУЗЕЙ В СЕТИ</button>
+            </div>
+          </div>
+
+          <div id="settings-tab-updates" class="settings-pane updates-pane">
+            <div class="updates-topline">
+              <div><span class="updates-eyebrow">ТЕКУЩАЯ ВЕРСИЯ</span><h2 id="updates-current-version">1.0.0 Beta</h2><p id="updates-status" class="updates-status">Автоматическая проверка обновлений доступна в установленной версии.</p></div>
+              <button class="brutal-btn" id="btn-check-updates">ПРОВЕРИТЬ</button>
+            </div>
+            <div class="release-strip" id="release-strip" role="tablist" aria-label="История обновлений">
+              <button class="release-chip active" data-release="1.0.0-beta" role="tab" aria-selected="true"><span>1.0.0 Beta</span><small>Текущая</small></button>
+            </div>
+            <article class="release-details" id="release-details" aria-live="polite">
+              <div class="release-details-meta"><span class="release-tag">BETA</span><span>Первый публичный бета-релиз</span></div>
+              <h3>Bloop 1.0.0 Beta</h3>
+              <p>Базовая версия мессенджера для тестирования в локальной сети и общей VPN-сети.</p>
+              <ul><li>Чаты, контакты и группы.</li><li>Голосовые и видеозвонки, групповые звонки и демонстрация экрана.</li><li>Автоматическое обнаружение пользователей в локальной сети.</li><li>Подготовлена система проверки обновлений. Для публикации обновлений необходимо настроить репозиторий GitHub по инструкции.</li></ul>
+            </article>
+            <p class="updates-footnote">История релизов показывает заметные изменения приложения. Проверка обновлений работает в установленной сборке после настройки источника релизов.</p>
+          </div>
+
+          <div id="settings-tab-notifications" class="settings-pane">
+            <div id="friend-requests-list" style="display:flex; flex-direction:column; gap:8px;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="user-profile-modal">
+    <div class="modal-content user-profile-layout">
+      <button class="close-modal-btn" data-close="user-profile-modal" style="left: 15px;">×</button>
+      
+      <div class="profile-banner-container" id="profile-banner-container">
+        <div class="profile-banner" id="profile-banner"></div>
+        <button class="edit-banner-btn" id="btn-edit-banner">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z"/></svg>
+          Изменить баннер
+        </button>
+      </div>
+
+      <div class="profile-main-content">
+        <div class="profile-avatar-wrapper">
+          <div class="profile-avatar" id="profile-avatar"></div>
+          <button class="edit-avatar-mini" id="btn-edit-avatar">
+            <svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z"/></svg>
+          </button>
+        </div>
+
+        <div class="profile-nickname-wrapper">
+          <div class="profile-nickname" id="profile-nickname">Nickname</div>
+          <input type="text" class="profile-nickname-input hidden" id="profile-nickname-input" placeholder="Новый ник...">
+        </div>
+
+        <div class="profile-description-wrapper">
+          <div class="profile-description-inline" id="profile-description">Описание отсутствует</div>
+          <input type="text" class="profile-description-input hidden" id="profile-description-input" placeholder="Добавить описание...">
+        </div>
+
+        <div class="profile-friends-section">
+          <div class="profile-friends-header">
+            Друзей: <span id="profile-friends-count">0</span>
+          </div>
+          <div class="profile-friends-grid" id="profile-friends-grid"></div>
+        </div>
+      </div>
+      
+      <button class="subtle-delete-btn" id="btn-profile-delete-account">Удалить аккаунт</button>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="chat-wallpaper-modal">
+    <div class="modal-content small" style="height: auto;">
+      <button class="close-modal-btn" data-close="chat-wallpaper-modal" style="left: 15px;">×</button>
+      <h3 style="margin-top: 10px;">[ ОБОИ ЧАТА ]</h3>
+      <p style="font-size:0.8rem; color:#8ca2b3; margin-bottom:15px; text-align:center;">Эти обои увидят все участники беседы.</p>
+      <button class="brutal-btn" id="btn-set-wallpaper" style="margin-bottom:10px; width:100%; padding:12px; font-size:0.9rem;">Загрузить обои</button>
+      <button class="brutal-btn cancel" id="btn-reset-wallpaper" style="margin-bottom:10px; width:100%; padding:12px; font-size:0.9rem;">Сбросить обои</button>
+    </div>
+  </div>
+
+  <input type="file" id="profile-banner-input" accept="image/*" style="display: none;">
+  <input type="file" id="profile-avatar-input" accept="image/*" style="display: none;">
+  <input type="file" id="chat-wallpaper-input" accept="image/*" style="display: none;">
+
+  <div id="bind-capture-overlay" class="hidden">
+    <div class="bind-capture-box">
+      <p id="bind-capture-text">Нажмите комбинацию клавиш...</p>
+      <div class="bind-capture-actions">
+        <button class="brutal-btn" id="btn-confirm-bind" style="display:none;">ПОДТВЕРДИТЬ</button>
+        <button class="brutal-btn cancel" id="btn-reset-bind" style="display:none;">СБРОС</button>
+        <button class="brutal-btn cancel" id="btn-cancel-bind">ОТМЕНА</button>
+      </div>
+      <p style="font-size:0.75rem; color:#8ca2b3; margin-top:10px;">Esc — отмена</p>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="find-user-modal">
+    <div class="modal-content" style="height: auto;">
+      <button class="close-modal-btn" data-close="find-user-modal" style="left: 15px;">×</button>
+      <h3 style="margin-top:10px;">[ НАЙТИ ДРУЗЕЙ ]</h3>
+      <p style="color:#8ca2b3;font-size:.8rem;margin:8px 0 14px">Пользователи рядом появятся автоматически. Для поиска по нику они должны быть в одной LAN/VPN.</p>
+      <input id="nearby-search" type="text" placeholder="Поиск по нику..." autocomplete="off" style="width:100%;margin-bottom:12px">
+      <div id="nearby-users-list" style="max-height:220px;overflow:auto;margin-bottom:14px"><p style="color:#8ca2b3">Поиск устройств в локальной сети…</p></div>
+      <details style="margin-top:10px"><summary style="cursor:pointer;color:#8ca2b3;font-size:.8rem">Ручное подключение по IP (резервный способ)</summary>
+      <p class="my-ip-text" style="text-align:center; font-size:0.8rem; color:#38bdf8; margin-bottom:15px;">ВАШ IP: <span id="my-ip-display">...</span></p>
+      <div class="input-group"><label>IP-АДРЕС ХОСТА</label><input type="text" id="find-ip" placeholder="Например: 192.168.1.5"></div>
+      <div class="input-group"><label>ФРЕНД-КОД ХОСТА</label><input type="text" id="find-friend-code" placeholder="BLOOP-XXXX-YYYY"></div>
+      <div class="modal-actions"><button class="brutal-btn" id="btn-do-find">ПОДКЛЮЧИТЬСЯ ПО IP</button></div>
+      </details>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="create-group-modal">
+    <div class="modal-content" style="height: auto;">
+      <button class="close-modal-btn" data-close="create-group-modal" style="left: 15px;">×</button>
+      <h3 style="margin-top:10px;">[ СОЗДАТЬ ГРУППУ ]</h3>
+      <div class="input-group"><label>НАЗВАНИЕ ГРУППЫ</label><input type="text" id="group-name-input" placeholder="Моя группа" autocomplete="off"></div>
+      <p class="contact-label" style="margin:12px 0 8px 0; font-size:0.75rem; color:#8ca2b3; letter-spacing:1px;">[ УЧАСТНИКИ (МИНИМУМ 2) ]</p>
+      <div class="group-member-list" id="group-member-list"></div>
+      <p id="group-error" style="color:#ff6b6b; font-size:0.75rem; display:none;">Нужно минимум 2 участника и название</p>
+      <div class="modal-actions"><button class="brutal-btn" id="btn-do-create-group">СОЗДАТЬ</button></div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="custom-confirm-modal" style="z-index: 5000;">
+    <div class="modal-content small" style="text-align:center; height: auto;">
+      <h3 style="margin-top:10px;" id="confirm-title">ПОДТВЕРЖДЕНИЕ</h3>
+      <p id="confirm-text" style="margin: 15px 0; color: #b0c4d4;">Вы уверены?</p>
+      <div class="modal-actions">
+        <button class="brutal-btn" id="btn-confirm-yes">ДА</button>
+        <button class="brutal-btn cancel" id="btn-confirm-no">НЕТ</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="custom-prompt-modal" style="z-index: 5000;">
+    <div class="modal-content small" style="text-align:center; height: auto;">
+      <h3 style="margin-top:10px;" id="prompt-title">ВВОД</h3>
+      <input type="text" id="prompt-input" style="width: 100%; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.2); padding: 10px; color: #fff; border-radius: 4px; margin-bottom: 15px; outline: none;">
+      <div class="modal-actions">
+        <button class="brutal-btn" id="btn-prompt-yes">ОК</button>
+        <button class="brutal-btn cancel" id="btn-prompt-no">ОТМЕНА</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="intro.js"></script>
+  <script src="renderer.js"></script>
+</body>
+</html>

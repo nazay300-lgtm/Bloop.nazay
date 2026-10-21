@@ -1,0 +1,56 @@
+{
+  "name": "bloop",
+  "version": "1.0.0-beta.0",
+  "description": "Bloop Messenger - 1.0.0 Beta",
+  "main": "main.js",
+  "author": "Bloop Developer",
+  "license": "ISC",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --win nsis",
+    "release:win": "electron-builder --win nsis --publish always"
+  },
+  "build": {
+    "appId": "com.bloop.app",
+    "productName": "Bloop",
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": "nsis",
+      "artifactName": "Bloop-Setup-${version}.${ext}"
+    },
+    "files": [
+      "**/*",
+      "!dist/**/*",
+      "!build/**/*"
+    ],
+    "asarUnpack": [
+      "node_modules/ws/**/*"
+    ],
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Bloop"
+    },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "YOUR_GITHUB_USERNAME",
+        "repo": "Bloop",
+        "releaseType": "prerelease"
+      }
+    ]
+  },
+  "dependencies": {
+    "ws": "^8.16.0",
+    "electron-updater": "^6.6.2"
+  },
+  "devDependencies": {
+    "electron": "^28.0.0",
+    "electron-builder": "^24.13.3"
+  }
+}
+
